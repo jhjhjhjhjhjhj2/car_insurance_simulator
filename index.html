@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>자동차보험 할인율 계산기</title>
+<style>
+  :root{
+    --primary:#3b82f6;
+    --bg:#f3f4f6;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --card:#ffffff;
+    --best:#eff6ff;
+    --accentMileage:#7c3aed;
+
+    /* 고려 특약(미가입) 강조 톤 */
+    --warnBg:#fff1f2;
+    --warnBorder:#fecdd3;
+    --warnTitle:#be123c;
+  }
+
+  body{
+    font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    background:var(--bg); color:var(--text);
+    padding:20px; display:flex; justify-content:center; margin:0;
+  }
+  .container{
+    background:#fff; width:100%; max-width:760px;
+    padding:24px; border-radius:16px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  }
+  h2{
+    text-align:center; color:var(--primary);
+    margin:0 0 18px 0; padding-bottom:14px;
+    border-bottom:2px solid var(--line);
+    font-size:1.55rem;
+  }
+
+  .section{
+    margin-bottom:16px; background:#f9fafb;
+    padding:14px; border-radius:12px; border:1px solid var(--line);
+  }
+  .label{
+    font-size:0.95rem; font-weight:900;
+    margin-bottom:10px; display:block; color:#374151;
+  }
+  .hint{
+    font-size:0.82rem; color:var(--muted);
+    margin-top:8px; line-height:1.45;
+  }
+  .sub-text{
+    font-size:0.8rem; color:#ef4444;
+    margin-top:6px; display:none;
+  }
+
+  select,input{
+    width:100%; padding:12px;
+    border:1px solid #d1d5db; border-radius:10px;
+    font-size:1rem; box-sizing:border-box; background:#fff;
+  }
+
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  button.primary{
+    width:100%; padding:16px; background:var(--primary); color:#fff;
+    border:none; border-radius:12px;
+    font-size:1.1rem; font-weight:900;
+    cursor:pointer; transition:0.2s; margin-top:6px;
+  }
+  button.primary:hover{ background:#2563eb; transform:translateY(-1px); }
+
+  /* pills (toggle buttons) */
+  .pill-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid #d1d5db; background:#fff; color:#111827;
+    padding:10px 12px; border-radius:999px;
+    cursor:pointer; user-select:none;
+    font-size:0.92rem; font-weight:800;
+  }
+  .pill input{ display:none; }
+  .pill.on{
+    border-color:#93c5fd;
+    background:#eff6ff;
+    color:#1d4ed8;
+  }
+  .pill .small{
+    font-size:0.78rem; font-weight:800; color:var(--muted);
+  }
+
+  /* results */
+  #result{ margin-top:18px; display:none; border-top:2px solid var(--line); padding-top:18px; }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.05);
+  }
+  .card.best{
+    border:2px solid var(--primary);
+    background:var(--best);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .co-name{
+    font-weight:950;
+    font-size:1.08rem;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .badges{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .badge{
+    font-size:0.78rem; font-weight:950;
+    padding:4px 8px; border-radius:999px;
+    border:1px solid #d1d5db; background:#fff; color:#374151;
+  }
+  .badge.best{
+    border-color:#93c5fd;
+    background:#dbeafe;
+    color:#1d4ed8;
+  }
+
+  .rate-box{
+    display:flex; gap:10px; align-items:stretch;
+  }
+  .rate{
+    min-width:132px;
+    border:1px solid #d1d5db; background:#fff;
+    border-radius:12px; padding:10px 10px;
+    display:flex; flex-direction:column;
+    gap:4px; text-align:right;
+  }
+  .rate .k{ font-size:0.78rem; color:var(--muted); font-weight:900; }
+  .rate .v{ font-size:1.24rem; font-weight:950; color:#111827; }
+  .rate.instant .v{ color:#1d4ed8; }
+  .rate.mileage .v{ color:var(--accentMileage); }
+
+  .divider{ height:1px; background:var(--line); margin:12px 0; }
+
+  .desc{
+    font-size:0.84rem;
+    color:var(--muted);
+    margin-top:6px;
+    display:block;
+    line-height:1.45;
+  }
+  .desc strong{ color:#374151; }
+
+  .consider-box{
+    margin-top:10px;
+    padding:10px;
+    border:1px dashed #cbd5e1;
+    background:#f8fafc;
+    border-radius:12px;
+  }
+
+  /* 고려 특약(미가입된) 강조 */
+  .consider-box.warn{
+    border:1px solid var(--warnBorder);
+    background:var(--warnBg);
+  }
+  .consider-box.warn .consider-title{
+    color:var(--warnTitle);
+  }
+
+  .consider-title{
+    font-weight:950;
+    font-size:0.9rem;
+    color:#0f172a;
+    margin-bottom:6px;
+  }
+  .consider-item{
+    font-size:0.84rem;
+    color:#334155;
+    line-height:1.45;
+    margin:6px 0;
+  }
+  .consider-item b{ color:#0f172a; }
+
+  .mini-note{
+    font-size:0.78rem;
+    color:var(--muted);
+    margin-top:6px;
+    line-height:1.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>🚗자동차보험 특약별 보험료 할인율 계산기</h2>
+
+  <!-- 1. 주행거리 -->
+  <div class="section">
+    <span class="label">1. 연간 주행거리 (마일리지: 후정산)</span>
+    <select id="km">
+      <option value="1000">1,000km 이하</option>
+      <option value="2000">2,000km 이하</option>
+      <option value="3000">3,000km 이하</option>
+      <option value="4000">4,000km 이하</option>
+      <option value="5000">5,000km 이하</option>
+      <option value="6000">6,000km 이하</option>
+      <option value="7000">7,000km 이하</option>
+      <option value="8000">8,000km 이하</option>
+      <option value="9000">9,000km 이하</option>
+      <option value="10000" selected>10,000km 이하</option>
+      <option value="11000">11,000km 이하</option>
+      <option value="12000">12,000km 이하</option>
+      <option value="13000">13,000km 이하</option>
+      <option value="14000">14,000km 이하</option>
+      <option value="15000">15,000km 이하</option>
+      <option value="over">15,000km 초과</option>
+    </select>
+    <div class="hint">
+      마일리지는 보통 선할인(즉시할인) 적용 후 보험료를 기준으로 나중에 정산(환급)되는 구조라,
+      즉시할인과 합산하지 않고 별도 표시합니다.
+    </div>
+  </div>
+
+  <!-- 2. 차량/블랙박스 -->
+  <div class="section">
+    <span class="label">2. 차량 정보</span>
+    <div class="grid-2">
+      <div>
+        <select id="carAge"></select>
+        <div class="hint">차령 0년은 2026년식(신차) 기준입니다.</div>
+      </div>
+      <div>
+        <select id="bbox">
+          <option value="N">블랙박스 미장착</option>
+          <option value="Y">블랙박스 장착</option>
+        </select>
+        <div class="hint">블랙박스는 즉시할인(선할인) 항목입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 자녀 할인 -->
+  <div class="section">
+    <span class="label">3. 자녀 정보 (만 나이)</span>
+    <div class="grid-2">
+      <div>
+        <select id="childCount" onchange="checkChildMsg()">
+          <option value="0">자녀 없음</option>
+          <option value="1">1명</option>
+          <option value="2">2명 이상</option>
+        </select>
+      </div>
+      <div>
+        <select id="childAge">
+          <option value="none">선택 안 함</option>
+          <option value="fetus">태아</option>
+          <option value="0">만 0세</option>
+          <option value="1">만 1세</option>
+          <option value="2">만 2세</option>
+          <option value="3">만 3세</option>
+          <option value="4">만 4세</option>
+          <option value="5">만 5세</option>
+          <option value="6">만 6세</option>
+          <option value="7">만 7세</option>
+          <option value="8">만 8세</option>
+          <option value="9">만 9세</option>
+          <option value="10">만 10세</option>
+          <option value="11">만 11세</option>
+          <option value="12">만 12세</option>
+          <option value="13">만 13세</option>
+          <option value="14">만 14세</option>
+          <option value="15">만 15세</option>
+          <option value="16">만 16세</option>
+          <option value="17">만 17세</option>
+          <option value="18">만 18세</option>
+        </select>
+      </div>
+    </div>
+    <div id="childMsg" class="sub-text">※ 자녀가 2명 이상이면 <b>막내 나이</b> 기준으로 입력하세요.</div>
+  </div>
+
+  <!-- 4. 안전운전 -->
+  <div class="section">
+    <span class="label">4. 안전운전 점수 (UBI: 즉시할인)</span>
+    <div class="grid-2">
+      <select id="ubiApp">
+        <option value="none">사용 안 함</option>
+        <option value="tmap">티맵 (T-map)</option>
+        <option value="naver">네이버지도</option>
+      </select>
+      <input type="number" id="ubiScore" placeholder="점수 (예: 65)" />
+    </div>
+    <div class="hint">UBI는 보험사와 상품에 따라 적용조건이 다를 수 있습니다.</div>
+  </div>
+
+  <!-- 5. 선택형 즉시할인 특약 -->
+  <div class="section">
+    <span class="label">5. 즉시할인 특약 (선택형)</span>
+
+    <div class="pill-row">
+      <label class="pill" id="pill_walk">
+        <input type="checkbox" id="rider_walk" />
+        <span>걷기점수 할인특약</span>
+        <span class="small">(선택)</span>
+      </label>
+
+      <label class="pill" id="pill_transit">
+        <input type="checkbox" id="rider_transit" />
+        <span>대중교통이용 할인특약</span>
+        <span class="small">(선택)</span>
+      </label>
+
+      <label class="pill" id="pill_seniorEdu">
+        <input type="checkbox" id="rider_seniorEdu" />
+        <span>고령운전자 교통안전교육할인</span>
+        <span class="small">(선택)</span>
+      </label>
+    </div>
+
+    <div class="hint">
+      • 걷기점수 예시: 보험사 자체 앱, 캐시워크, 토스 등 앱 활용, 직전 기준일간 일 5,000보 이상 걸은 날이 기준일수 이상인 경우 (보험사별 기준 상이)<br/>
+      • 대중교통 예시: 기준 내 대중교통 이용횟수 또는 이용금액이 일정 건수 또는 금액 이상인 경우 (보험사별 기준 상이)<br/>
+      • 고령운전자 교육 예시: 만 65세 이상 도로교통공단 교통안전교육 이수 시 할인
+    </div>
+  </div>
+
+  <button class="primary" onclick="calculate()">할인율 계산하기</button>
+  <div id="result"></div>
+</div>
+
+<script>
+  const companies = ['현대','KB','삼성','DB','메리츠','한화'];
+
+  /* ======================
+     차령 드롭다운 (0년=2026년식)
+  ====================== */
+  const BASE_NEW_YEAR = 2026;
+  function buildCarAgeOptions(){
+    const sel = document.getElementById('carAge');
+    sel.innerHTML = '';
+
+    for (let age = 0; age <= 14; age++){
+      const y = BASE_NEW_YEAR - age;
+      const opt = document.createElement('option');
+      opt.value = String(age);
+      opt.textContent = `${age}년 (${y}년식)`;
+      sel.appendChild(opt);
+    }
+
+    const opt15 = document.createElement('option');
+    opt15.value = '15';
+    opt15.textContent = `15년 이상 (${BASE_NEW_YEAR - 15}년 이전)`;
+    sel.appendChild(opt15);
+
+    sel.value = '0';
+  }
+
+  /* ======================
+     특약 조건/주의사항 문구 (보험사별)
+  ====================== */
+  const RIDER_RULE_TEXT = {
+    walk: {
+      '현대': '세부 조건 명시 X',
+      'KB': '[KB Walk][캐시워크][토스] 앱 이용, 기명피보험자걸음수 직전 30일간 ‘하루 5천보 달성일’이 ‘17일 이상’',
+      '삼성': '세부 조건 명시 X',
+      'DB': '직전 90일 동안 1일 5,000보 이상 걸은 날이 45일 이상',
+      '메리츠': '해당 특약 X',
+      '한화': '해당 특약 X'
+    },
+    transit: {
+      '현대': '3개월 내 실물카드 or 모바일카드 or 통근버스 50회 이상 이용',
+      'KB': '직전 3개월간 대중교통이용금액 7만원 이상(기명 1인 기준)',
+      '삼성': '직전 2개월 간 지하철, 버스, 택시, 따릉이 25일 이상 이용 ※주의: 가입 시 보험료 8% + 마일리지 정산 시 환급보험료 있는 경우 추가 2% 형태 등(상품별 상이)',
+      'DB': '청구월 기준 직전 2개월 동안 대중교통 이용횟수가 50건 이상',
+      '메리츠': '해당 특약 없음',
+      '한화': '해당 특약 없음'
+    },
+    seniorEdu: {
+      '현대': '만 65세 이상 도로교통공단 교통안전교육 이수 시 할인',
+      'KB': '만 65세 이상 도로교통공단 교통안전교육 이수 시 할인',
+      '삼성': '만 65세 이상 도로교통공단 교통안전교육 이수 시 할인',
+      'DB': '만 65세 이상 도로교통공단 교통안전교육 이수 시 할인',
+      '메리츠': '만 65세 이상 도로교통공단 교통안전교육 이수 시 할인',
+      '한화': '만 65세 이상 도로교통공단 교통안전교육 이수 시 할인'
+    }
+  };
+
+  function getRiderRuleText(companyName, key){
+    const v = RIDER_RULE_TEXT?.[key]?.[companyName];
+    return (v && String(v).trim()) ? String(v) : '명시 X';
+  }
+
+  /* ======================
+     데이터 (CSV 반영)
+  ====================== */
+
+  // 1) 마일리지(후정산)
+  const KM_DATA = {
+    '현대': {1000:45.00, 2000:36.00, 3000:36.00, 4000:29.00, 5000:29.00, 6000:22.00, 7000:22.00, 8000:22.00, 9000:18.00, 10000:18.00, 11000:8.00, 12000:8.00, 13000:5.00, 14000:5.00, 15000:5.00, 'over':2.00},
+    'KB':   {1000:35.30, 2000:35.30, 3000:30.30, 4000:30.30, 5000:26.50, 6000:22.60, 7000:22.60, 8000:22.60, 9000:17.30, 10000:17.30, 11000:7.50, 12000:7.50, 13000:5.40, 14000:5.40, 15000:5.40, 'over':0.00},
+    '삼성': {1000:40.00, 2000:34.00, 3000:28.00, 4000:25.00, 5000:23.00, 6000:22.00, 7000:20.00, 8000:20.00, 9000:16.00, 10000:16.00, 11000:5.00, 12000:5.00, 13000:2.00, 14000:2.00, 15000:2.00, 'over':0.00},
+    'DB':   {1000:42.00, 2000:35.00, 3000:27.00, 4000:25.00, 5000:24.00, 6000:22.00, 7000:21.00, 8000:20.00, 9000:18.00, 10000:17.00, 11000:11.00, 12000:11.00, 13000:8.00, 14000:8.00, 15000:8.00, 'over':0.00},
+    '메리츠':{1000:47.00, 2000:47.00, 3000:47.00, 4000:31.00, 5000:31.00, 6000:31.00, 7000:31.00, 8000:31.00, 9000:14.00, 10000:14.00, 11000:14.00, 12000:14.00, 13000:2.00, 14000:2.00, 15000:2.00, 'over':2.00},
+    '한화': {1000:38.90, 2000:36.20, 3000:33.50, 4000:30.80, 5000:28.10, 6000:25.50, 7000:22.80, 8000:20.10, 9000:17.40, 10000:14.70, 11000:12.10, 12000:9.40, 13000:6.70, 14000:4.00, 15000:1.30, 'over':0.00}
+  };
+
+  // 2) 블랙박스(일반형) 차령별 (index: 0=0년 ... 15=15년 이상)
+  const BBOX_DATA = {
+    '현대':  [2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,0.00,0.00,0.00],
+    'KB':    [4.30,4.30,4.30,2.60,2.60,2.60,2.60,2.60,2.60,2.60,2.60,2.60,0.00,0.00,0.00,0.00],
+    '삼성':  [1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70,1.70],
+    'DB':    [2.50,2.50,2.50,1.40,1.40,1.40,1.40,1.40,1.40,1.40,0.00,0.00,0.00,0.00,0.00,0.00],
+    '메리츠':[10.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00],
+    '한화':  [6.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,5.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00]
+  };
+  function getBBoxRate(comp, carAge){
+    const yIdx = (carAge >= 15) ? 15 : carAge;
+    const row = BBOX_DATA[comp] || [];
+    return (row[yIdx] !== undefined) ? Number(row[yIdx]) : 0.00;
+  }
+
+  // 3) 자녀할인 (1자녀 / 2자녀 이상, 태아 + 0..18)
+  const CHILD_1 = {
+    '현대':  {'fetus':14.00, 0:14.00, 1:10.00,2:10.00,3:10.00,4:10.00,5:10.00,6:10.00,7:6.00,8:6.00,9:6.00,10:2.00,11:2.00,12:2.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    'KB':    {'fetus':13.70, 0:13.70, 1:7.70,2:7.70,3:7.70,4:7.70,5:7.70,6:7.70,7:3.70,8:3.70,9:3.70,10:1.70,11:1.70,12:1.70,13:1.70,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    '삼성':  {'fetus':15.50, 0:2.80,  1:1.00,2:1.00,3:1.00,4:1.00,5:1.00,6:1.40,7:1.40,8:1.40,9:1.40,10:1.40,11:1.40,12:1.40,13:1.40,14:1.40,15:1.40,16:1.40,17:1.40,18:1.40},
+    'DB':    {'fetus':16.10, 0:8.70,  1:4.30,2:4.30,3:4.30,4:4.30,5:4.30,6:3.60,7:1.70,8:1.70,9:1.70,10:1.70,11:1.70,12:0.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    '메리츠':{'fetus':7.00,  0:7.00,  1:7.00,2:7.00,3:7.00,4:7.00,5:7.00,6:7.00,7:7.00,8:0.00,9:0.00,10:0.00,11:0.00,12:0.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    '한화':  {'fetus':20.10, 0:16.10, 1:7.00,2:7.00,3:7.00,4:7.00,5:8.00,6:8.00,7:8.00,8:8.00,9:8.00,10:8.00,11:0.00,12:0.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00}
+  };
+
+  const CHILD_MULTI = {
+    '현대':  {'fetus':16.00, 0:15.00, 1:11.00,2:11.00,3:11.00,4:11.00,5:11.00,6:11.00,7:8.00,8:8.00,9:8.00,10:4.00,11:4.00,12:4.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    'KB':    {'fetus':15.30, 0:15.30, 1:9.40, 2:9.40,3:9.40,4:9.40,5:9.40,6:9.40,7:5.40,8:5.40,9:5.40,10:3.50,11:3.50,12:3.50,13:3.50,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    '삼성':  {'fetus':17.10, 0:4.40,  1:2.60, 2:2.60,3:2.60,4:2.60,5:2.60,6:3.00,7:3.00,8:3.00,9:3.00,10:3.00,11:3.00,12:5.10,13:5.10,14:5.10,15:5.10,16:5.10,17:5.10,18:5.10},
+    'DB':    {'fetus':18.10, 0:10.70, 1:6.30, 2:6.30,3:6.30,4:6.30,5:6.30,6:5.60,7:3.70,8:3.70,9:3.70,10:3.70,11:3.70,12:0.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    '메리츠':{'fetus':7.00,  0:7.00,  1:7.00, 2:7.00,3:7.00,4:7.00,5:7.00,6:7.00,7:7.00,8:0.00,9:0.00,10:0.00,11:0.00,12:0.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
+    '한화':  {'fetus':24.40, 0:20.60, 1:12.00,2:12.00,3:12.00,4:12.00,5:8.00, 6:8.00, 7:8.00, 8:8.00, 9:8.00,10:8.00,11:0.00,12:0.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00}
+  };
+
+  function getChildRate(comp, childCount, childAgeKey){
+    const table = (childCount === '1') ? CHILD_1 : CHILD_MULTI;
+    const compRow = table[comp] || {};
+    if (!Object.prototype.hasOwnProperty.call(compRow, childAgeKey)) return 0.00;
+    return Number(compRow[childAgeKey]);
+  }
+
+  // 4) 안전운전(UBI) - used/new
+  const UBI_USED = {
+    '현대': { tmap:[{min:96,rate:11.00},{min:95,rate:11.00},{min:91,rate:11.00},{min:90,rate:11.00},{min:86,rate:8.00},{min:85,rate:8.00},{min:81,rate:8.00},{min:80,rate:8.00},{min:71,rate:4.30},{min:70,rate:4.30},{min:61,rate:0.00}],
+              naver:[{min:96,rate:10.20},{min:95,rate:10.20},{min:91,rate:10.20},{min:90,rate:10.20},{min:86,rate:7.20},{min:85,rate:7.20},{min:81,rate:7.20},{min:80,rate:7.20},{min:71,rate:3.50},{min:70,rate:3.50},{min:61,rate:0.00}] },
+    'KB':   { tmap:[{min:96,rate:19.50},{min:95,rate:19.50},{min:91,rate:13.70},{min:90,rate:13.70},{min:86,rate:7.30},{min:85,rate:7.30},{min:81,rate:7.30},{min:80,rate:7.30},{min:71,rate:0.60},{min:70,rate:0.60},{min:61,rate:0.00}],
+              naver:[{min:96,rate:19.60},{min:95,rate:19.60},{min:91,rate:19.60},{min:90,rate:19.60},{min:86,rate:18.60},{min:85,rate:18.60},{min:81,rate:18.60},{min:80,rate:18.60},{min:71,rate:13.10},{min:70,rate:13.10},{min:61,rate:0.00}] },
+    '삼성': { tmap:[{min:96,rate:16.90},{min:95,rate:16.90},{min:91,rate:10.70},{min:90,rate:4.60},{min:86,rate:4.60},{min:85,rate:4.60},{min:81,rate:4.60},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:19.50},{min:95,rate:19.50},{min:91,rate:11.50},{min:90,rate:4.70},{min:86,rate:4.70},{min:85,rate:4.70},{min:81,rate:4.70},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+    'DB':   { tmap:[{min:96,rate:19.30},{min:95,rate:19.30},{min:91,rate:12.60},{min:90,rate:12.60},{min:86,rate:2.00},{min:85,rate:2.00},{min:81,rate:2.00},{min:80,rate:2.00},{min:71,rate:2.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:19.30},{min:95,rate:19.30},{min:91,rate:12.60},{min:90,rate:12.60},{min:86,rate:2.00},{min:85,rate:2.00},{min:81,rate:2.00},{min:80,rate:2.00},{min:71,rate:2.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+    '메리츠':{ tmap:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+    '한화': { tmap:[{min:96,rate:18.10},{min:95,rate:18.10},{min:91,rate:18.10},{min:90,rate:18.10},{min:86,rate:9.50},{min:85,rate:9.50},{min:81,rate:9.50},{min:80,rate:9.50},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:0.00},{min:95,rate:0.00},{min:91,rate:0.00},{min:90,rate:0.00},{min:86,rate:0.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] }
+  };
+
+  const UBI_NEW = {
+    '현대': { tmap:[{min:96,rate:15.80},{min:95,rate:15.80},{min:91,rate:15.80},{min:90,rate:15.80},{min:86,rate:13.00},{min:85,rate:13.00},{min:81,rate:13.00},{min:80,rate:13.00},{min:71,rate:9.50},{min:70,rate:9.50},{min:61,rate:0.00}],
+              naver:[{min:96,rate:15.00},{min:95,rate:15.00},{min:91,rate:15.00},{min:90,rate:15.00},{min:86,rate:12.20},{min:85,rate:12.20},{min:81,rate:12.20},{min:80,rate:12.20},{min:71,rate:8.70},{min:70,rate:8.70},{min:61,rate:0.00}] },
+    'KB':   { tmap:[{min:96,rate:19.50},{min:95,rate:19.50},{min:91,rate:13.70},{min:90,rate:13.70},{min:86,rate:7.30},{min:85,rate:7.30},{min:81,rate:7.30},{min:80,rate:7.30},{min:71,rate:0.60},{min:70,rate:0.60},{min:61,rate:0.00}],
+              naver:[{min:96,rate:19.60},{min:95,rate:19.60},{min:91,rate:19.60},{min:90,rate:19.60},{min:86,rate:18.60},{min:85,rate:18.60},{min:81,rate:18.60},{min:80,rate:18.60},{min:71,rate:13.10},{min:70,rate:13.10},{min:61,rate:0.00}] },
+    '삼성': { tmap:[{min:96,rate:16.90},{min:95,rate:16.90},{min:91,rate:10.70},{min:90,rate:4.60},{min:86,rate:4.60},{min:85,rate:4.60},{min:81,rate:4.60},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:19.50},{min:95,rate:19.50},{min:91,rate:11.50},{min:90,rate:4.70},{min:86,rate:4.70},{min:85,rate:4.70},{min:81,rate:4.70},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+    'DB':   { tmap:[{min:96,rate:21.00},{min:95,rate:21.00},{min:91,rate:14.50},{min:90,rate:14.50},{min:86,rate:4.10},{min:85,rate:4.10},{min:81,rate:4.10},{min:80,rate:4.10},{min:71,rate:4.10},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:21.00},{min:95,rate:21.00},{min:91,rate:14.50},{min:90,rate:14.50},{min:86,rate:4.10},{min:85,rate:4.10},{min:81,rate:4.10},{min:80,rate:4.10},{min:71,rate:4.10},{min:70,rate:0.00},{min:61,rate:0.00}] },
+    '메리츠':{ tmap:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+    '한화': { tmap:[{min:96,rate:18.10},{min:95,rate:18.10},{min:91,rate:18.10},{min:90,rate:18.10},{min:86,rate:9.50},{min:85,rate:9.50},{min:81,rate:9.50},{min:80,rate:9.50},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
+              naver:[{min:96,rate:0.00},{min:95,rate:0.00},{min:91,rate:0.00},{min:90,rate:0.00},{min:86,rate:0.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] }
+  };
+
+  function getUbiRate(comp, app, score, isNew){
+    if (!score || app === 'none') return 0.00;
+    const table = isNew ? UBI_NEW : UBI_USED;
+    const compRow = table[comp];
+    if (!compRow || !compRow[app]) return 0.00;
+    for (const rule of compRow[app]){
+      if (score >= rule.min) return Number(rule.rate);
+    }
+    return 0.00;
+  }
+
+  function getUbiMax(comp, isNew){
+    const table = isNew ? UBI_NEW : UBI_USED;
+    const compRow = table[comp] || {};
+    const candidates = [];
+    if (compRow.tmap) candidates.push(...compRow.tmap.map(r => Number(r.rate)));
+    if (compRow.naver) candidates.push(...compRow.naver.map(r => Number(r.rate)));
+    return candidates.length ? Math.max(...candidates) : 0.00;
+  }
+
+  // 5) 걷기/대중교통/고령교육 (즉시할인, 선택형)
+  const RIDER_WALK = { '현대':5.00, 'KB':10.00, '삼성':6.00, 'DB':8.80, '메리츠':0.00, '한화':0.00 };
+  const RIDER_TRANSIT = { '현대':9.00, 'KB':10.00, '삼성':10.00, 'DB':10.00, '메리츠':0.00, '한화':0.00 };
+  const RIDER_SENIOR_EDU = { '현대':5.00, 'KB':5.00, '삼성':5.00, 'DB':5.00, '메리츠':5.00, '한화':5.00 };
+
+  /* ======================
+     UI helpers
+  ====================== */
+  function checkChildMsg(){
+    const cnt = document.getElementById('childCount').value;
+    document.getElementById('childMsg').style.display = (cnt === '2') ? 'block' : 'none';
+  }
+
+  function bindPills(){
+    const map = [
+      {pillId:'pill_walk', inputId:'rider_walk'},
+      {pillId:'pill_transit', inputId:'rider_transit'},
+      {pillId:'pill_seniorEdu', inputId:'rider_seniorEdu'}
+    ];
+    map.forEach(({pillId,inputId})=>{
+      const pill = document.getElementById(pillId);
+      const input = document.getElementById(inputId);
+      const sync = ()=> pill.classList.toggle('on', input.checked);
+      pill.addEventListener('click', ()=>{ input.checked = !input.checked; sync(); });
+      sync();
+    });
+  }
+
+  function fmtRate(x){
+    return `${Number(x).toFixed(2)}%`;
+  }
+
+  function calculate(){
+    const km = document.getElementById('km').value;
+
+    const carAge = parseInt(document.getElementById('carAge').value, 10) || 0;
+    const isNew = (carAge === 0);
+
+    const bbox = document.getElementById('bbox').value;
+
+    const childCount = document.getElementById('childCount').value;
+    const childAgeVal = document.getElementById('childAge').value;
+
+    const ubiApp = document.getElementById('ubiApp').value;
+    const ubiScore = parseInt(document.getElementById('ubiScore').value, 10) || 0;
+
+    const optWalk = document.getElementById('rider_walk').checked;
+    const optTransit = document.getElementById('rider_transit').checked;
+    const optSeniorEdu = document.getElementById('rider_seniorEdu').checked;
+
+    let results = [];
+
+    for (const comp of companies){
+      let instant = 0.00;
+      let mileage = 0.00;
+      let logsInstant = [];
+      let logMileage = '';
+
+      // 후정산: 마일리지
+      mileage = (KM_DATA[comp] && KM_DATA[comp][km] !== undefined) ? Number(KM_DATA[comp][km]) : 0.00;
+      logMileage = `마일리지(후정산) ${fmtRate(mileage)}`;
+
+      // 즉시: 블랙박스
+      if (bbox === 'Y'){
+        const bVal = getBBoxRate(comp, carAge);
+        if (bVal > 0){
+          instant += bVal;
+          logsInstant.push(`블랙박스 ${fmtRate(bVal)}`);
+        }
+      }
+
+      // 즉시: 자녀
+      if (childCount !== '0' && childAgeVal !== 'none'){
+        const key = (childAgeVal === 'fetus') ? 'fetus' : Number(childAgeVal);
+        const cVal = getChildRate(comp, childCount, key);
+        if (cVal > 0){
+          instant += cVal;
+          logsInstant.push(`자녀할인 ${fmtRate(cVal)}`);
+        }
+      }
+
+      // 즉시: UBI
+      if (ubiApp !== 'none'){
+        const uVal = getUbiRate(comp, ubiApp, ubiScore, isNew);
+        if (uVal > 0){
+          instant += uVal;
+          logsInstant.push(`안전운전 ${fmtRate(uVal)}`);
+        }
+      }
+
+      // 즉시: 선택 특약
+      if (optWalk){
+        const v = Number(RIDER_WALK[comp] || 0);
+        if (v > 0){
+          instant += v;
+          logsInstant.push(`걷기점수 ${fmtRate(v)}`);
+        }
+      }
+      if (optTransit){
+        const v = Number(RIDER_TRANSIT[comp] || 0);
+        if (v > 0){
+          instant += v;
+          logsInstant.push(`대중교통 ${fmtRate(v)}`);
+        }
+      }
+      if (optSeniorEdu){
+        const v = Number(RIDER_SENIOR_EDU[comp] || 0);
+        if (v > 0){
+          instant += v;
+          logsInstant.push(`고령교육 ${fmtRate(v)}`);
+        }
+      }
+
+      const simpleSum = instant + mileage;
+
+      // 고려 특약
+      let consider = [];
+
+      // 블랙박스: 조건 없이 "가입 시 최대 +xx% 가능" (한 줄만)
+      if (bbox === 'N'){
+        const add = getBBoxRate(comp, carAge);
+        if (add > 0) consider.push({ name:'블랙박스 장착', rate:add, type:'simpleMax' });
+      }
+
+      // UBI: 미사용 또는 점수 미입력 시에만 "가입 시 최대 +xx% 가능" (한 줄만)
+      if (ubiApp === 'none' || !ubiScore){
+        const maxUbi = getUbiMax(comp, isNew);
+        if (maxUbi > 0) consider.push({ name:'안전운전(UBI)', rate:maxUbi, type:'simpleMax' });
+      }
+
+      // 걷기/대중교통/고령교육: 문구도 "가입 시 최대 +xx% 가능"으로 통일 + 조건 mini-note 유지
+      if (!optWalk){
+        const add = Number(RIDER_WALK[comp] || 0);
+        if (add > 0) consider.push({ name:'걷기점수 할인특약', rate:add, type:'labeled', key:'walk', label:'기준 충족 여부:' });
+      }
+      if (!optTransit){
+        const add = Number(RIDER_TRANSIT[comp] || 0);
+        if (add > 0) consider.push({ name:'대중교통이용 할인특약', rate:add, type:'labeled', key:'transit', label:'이용 실적 기준:' });
+      }
+      if (!optSeniorEdu){
+        const add = Number(RIDER_SENIOR_EDU[comp] || 0);
+        if (add > 0) consider.push({ name:'고령운전자 교통안전교육할인', rate:add, type:'labeled', key:'seniorEdu', label:'연령/이수 조건:' });
+      }
+
+      consider = consider.filter(x => Number(x.rate) > 0);
+
+      results.push({
+        name: comp,
+        instantRate: instant,
+        mileageRate: mileage,
+        simpleSumRate: simpleSum,
+        logInstant: logsInstant.join(', ') || '해당 없음',
+        logMileage,
+        consider
+      });
+    }
+
+    // 정렬 규칙
+    // 1) 즉시할인이 하나라도 있으면: 즉시할인(선할인) 합계 기준
+    // 2) 전부 즉시할인 0이면: 마일리지(후정산) 환급율 기준
+    const allInstantZero = results.every(r => Number(r.instantRate) === 0);
+    results.sort((a, b) => {
+      if (allInstantZero) return Number(b.mileageRate) - Number(a.mileageRate);
+      return Number(b.instantRate) - Number(a.instantRate);
+    });
+
+    // TOP3 표시용
+    const top3Names = results.slice(0,3).map(x=>x.name);
+
+    const resBox = document.getElementById('result');
+    resBox.style.display = 'block';
+    resBox.innerHTML = '';
+
+    results.forEach((r)=>{
+      const isTop3 = top3Names.includes(r.name);
+      const rank = top3Names.indexOf(r.name);
+      const icon = (rank === 0) ? '🥇' : (rank === 1 ? '🥈' : (rank === 2 ? '🥉' : ''));
+      const bestClass = isTop3 ? 'best' : '';
+      const badgeHtml = isTop3 ? `<span class="badge best">TOP ${rank+1}</span>` : `<span class="badge">비교</span>`;
+
+      let considerHtml = '';
+      if (r.consider && r.consider.length){
+        considerHtml += `<div class="consider-box warn">
+          <div class="consider-title">추가 할인 가능 특약(현재 미선택 기준)</div>`;
+
+        r.consider.forEach(item=>{
+          // simpleMax(블랙박스/UBI)는 "가입 시 최대 +xx% 가능" 한 줄만
+          if (item.type === 'simpleMax'){
+            considerHtml += `
+              <div class="consider-item">
+                <b>${item.name}</b> 가입 시 최대 <b>+${fmtRate(item.rate)}</b> 가능
+              </div>`;
+            return;
+          }
+
+          // labeled도 "가입 시 최대 +xx% 가능" 으로 통일 + 아래 라벨:내용 유지
+          if (item.type === 'labeled'){
+            const rule = item.key ? getRiderRuleText(r.name, item.key) : '명시 X';
+            considerHtml += `
+              <div class="consider-item">
+                <b>${item.name}</b> 가입 시 최대 <b>+${fmtRate(item.rate)}</b> 가능
+                <div class="mini-note"><b>${item.label}</b> ${rule}</div>
+              </div>`;
+            return;
+          }
+        });
+
+        considerHtml += `</div>`;
+      }
+
+      resBox.innerHTML += `
+        <div class="card ${bestClass}">
+          <div class="card-top">
+            <div>
+              <div class="co-name">${icon} ${r.name}</div>
+              <div class="badges">${badgeHtml}</div>
+            </div>
+
+            <div class="rate-box">
+              <div class="rate instant">
+                <div class="k">즉시할인(선할인) 합계</div>
+                <div class="v">${fmtRate(r.instantRate)}</div>
+              </div>
+              <div class="rate mileage">
+                <div class="k">마일리지(후정산) 환급율</div>
+                <div class="v">${fmtRate(r.mileageRate)}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <span class="desc"><strong>즉시할인 구성</strong>: ${r.logInstant}</span>
+          <span class="desc"><strong>후정산</strong>: ${r.logMileage}</span>
+          <span class="desc"><strong>단순합(참고)</strong>: ${fmtRate(r.simpleSumRate)} (실제 적용 순서 반영 아님)</span>
+
+          ${considerHtml}
+        </div>
+      `;
+    });
+  }
+
+  // init
+  buildCarAgeOptions();
+  checkChildMsg();
+  bindPills();
+</script>
+
+</body>
+</html>
