@@ -192,6 +192,85 @@
     margin-top:6px;
     line-height:1.4;
   }
+
+  /* =========================
+     Mobile responsive fixes
+     결과 산출 후 카드 깨짐 방지
+  ========================= */
+  *{ box-sizing:border-box; }
+  html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+
+  /* iOS에서 input 확대/레이아웃 튐 방지 */
+  select, input, button{ font-size:16px; }
+
+  @media (max-width: 520px){
+    body{
+      padding:12px;
+      display:block; /* 좁은 화면에서 flex 중앙정렬로 인한 계산 문제 방지 */
+    }
+
+    .container{
+      width:100%;
+      max-width:760px;
+      padding:16px;
+      border-radius:14px;
+    }
+
+    h2{
+      font-size:1.25rem;
+      padding-bottom:12px;
+    }
+
+    .grid-2{
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+
+    .pill-row{ gap:8px; }
+    .pill{
+      width:100%;
+      justify-content:space-between;
+    }
+
+    /* 결과 카드 상단 레이아웃을 세로로 변경 */
+    .card-top{
+      flex-direction:column;
+      align-items:stretch;
+      gap:10px;
+    }
+
+    /* 오른쪽 rate 영역이 가로로 터지지 않도록 */
+    .rate-box{
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr; /* 가장 안전 */
+      gap:10px;
+    }
+
+    .rate{
+      min-width:0;   /* 기존 132px 때문에 오버플로 발생 */
+      width:100%;
+      text-align:left; /* 모바일 가독성 */
+    }
+    .rate .v{
+      font-size:1.15rem;
+    }
+  }
+
+  /* 조금 더 넓은 폰에서는 2열로 */
+  @media (min-width: 521px) and (max-width: 720px){
+    .card-top{
+      flex-direction:column;
+      align-items:stretch;
+    }
+    .rate-box{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      width:100%;
+      gap:10px;
+    }
+    .rate{ min-width:0; width:100%; text-align:left; }
+  }
 </style>
 </head>
 <body>
@@ -461,7 +540,7 @@
     'DB':   { tmap:[{min:96,rate:19.30},{min:95,rate:19.30},{min:91,rate:12.60},{min:90,rate:12.60},{min:86,rate:2.00},{min:85,rate:2.00},{min:81,rate:2.00},{min:80,rate:2.00},{min:71,rate:2.00},{min:70,rate:0.00},{min:61,rate:0.00}],
               naver:[{min:96,rate:19.30},{min:95,rate:19.30},{min:91,rate:12.60},{min:90,rate:12.60},{min:86,rate:2.00},{min:85,rate:2.00},{min:81,rate:2.00},{min:80,rate:2.00},{min:71,rate:2.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
     '메리츠':{ tmap:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
-              naver:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+               naver:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
     '한화': { tmap:[{min:96,rate:18.10},{min:95,rate:18.10},{min:91,rate:18.10},{min:90,rate:18.10},{min:86,rate:9.50},{min:85,rate:9.50},{min:81,rate:9.50},{min:80,rate:9.50},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
               naver:[{min:96,rate:0.00},{min:95,rate:0.00},{min:91,rate:0.00},{min:90,rate:0.00},{min:86,rate:0.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] }
   };
@@ -476,7 +555,7 @@
     'DB':   { tmap:[{min:96,rate:21.00},{min:95,rate:21.00},{min:91,rate:14.50},{min:90,rate:14.50},{min:86,rate:4.10},{min:85,rate:4.10},{min:81,rate:4.10},{min:80,rate:4.10},{min:71,rate:4.10},{min:70,rate:0.00},{min:61,rate:0.00}],
               naver:[{min:96,rate:21.00},{min:95,rate:21.00},{min:91,rate:14.50},{min:90,rate:14.50},{min:86,rate:4.10},{min:85,rate:4.10},{min:81,rate:4.10},{min:80,rate:4.10},{min:71,rate:4.10},{min:70,rate:0.00},{min:61,rate:0.00}] },
     '메리츠':{ tmap:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
-              naver:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
+               naver:[{min:96,rate:15.00},{min:95,rate:6.00},{min:91,rate:6.00},{min:90,rate:6.00},{min:86,rate:6.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] },
     '한화': { tmap:[{min:96,rate:18.10},{min:95,rate:18.10},{min:91,rate:18.10},{min:90,rate:18.10},{min:86,rate:9.50},{min:85,rate:9.50},{min:81,rate:9.50},{min:80,rate:9.50},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}],
               naver:[{min:96,rate:0.00},{min:95,rate:0.00},{min:91,rate:0.00},{min:90,rate:0.00},{min:86,rate:0.00},{min:85,rate:0.00},{min:81,rate:0.00},{min:80,rate:0.00},{min:71,rate:0.00},{min:70,rate:0.00},{min:61,rate:0.00}] }
   };
@@ -619,19 +698,19 @@
       // 고려 특약
       let consider = [];
 
-      // 블랙박스: 조건 없이 "가입 시 최대 +xx% 가능" (한 줄만)
+      // 블랙박스
       if (bbox === 'N'){
         const add = getBBoxRate(comp, carAge);
         if (add > 0) consider.push({ name:'블랙박스 장착', rate:add, type:'simpleMax' });
       }
 
-      // UBI: 미사용 또는 점수 미입력 시에만 "가입 시 최대 +xx% 가능" (한 줄만)
+      // UBI
       if (ubiApp === 'none' || !ubiScore){
         const maxUbi = getUbiMax(comp, isNew);
         if (maxUbi > 0) consider.push({ name:'안전운전(UBI)', rate:maxUbi, type:'simpleMax' });
       }
 
-      // 걷기/대중교통/고령교육: 문구도 "가입 시 최대 +xx% 가능"으로 통일 + 조건 mini-note 유지
+      // 걷기/대중교통/고령교육
       if (!optWalk){
         const add = Number(RIDER_WALK[comp] || 0);
         if (add > 0) consider.push({ name:'걷기점수 할인특약', rate:add, type:'labeled', key:'walk', label:'기준 충족 여부:' });
@@ -659,15 +738,12 @@
     }
 
     // 정렬 규칙
-    // 1) 즉시할인이 하나라도 있으면: 즉시할인(선할인) 합계 기준
-    // 2) 전부 즉시할인 0이면: 마일리지(후정산) 환급율 기준
     const allInstantZero = results.every(r => Number(r.instantRate) === 0);
     results.sort((a, b) => {
       if (allInstantZero) return Number(b.mileageRate) - Number(a.mileageRate);
       return Number(b.instantRate) - Number(a.instantRate);
     });
 
-    // TOP3 표시용
     const top3Names = results.slice(0,3).map(x=>x.name);
 
     const resBox = document.getElementById('result');
@@ -687,7 +763,6 @@
           <div class="consider-title">추가 할인 가능 특약(현재 미선택 기준)</div>`;
 
         r.consider.forEach(item=>{
-          // simpleMax(블랙박스/UBI)는 "가입 시 최대 +xx% 가능" 한 줄만
           if (item.type === 'simpleMax'){
             considerHtml += `
               <div class="consider-item">
@@ -696,7 +771,6 @@
             return;
           }
 
-          // labeled도 "가입 시 최대 +xx% 가능" 으로 통일 + 아래 라벨:내용 유지
           if (item.type === 'labeled'){
             const rule = item.key ? getRiderRuleText(r.name, item.key) : '명시 X';
             considerHtml += `
