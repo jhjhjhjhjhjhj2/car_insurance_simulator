@@ -21,64 +21,128 @@
     --warnTitle:#be123c;
   }
 
+  /* ===== WebView(iOS/Kakao) 안정화 기본값 ===== */
+  *{ box-sizing:border-box; }
+  html, body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+    -webkit-text-size-adjust:100%; /* 카카오 인앱에서 글자 자동확대 방지 */
+    text-size-adjust:100%;
+  }
+
+  /* flex/grid 자식이 내용 때문에 폭을 밀어내지 않게 */
+  .container, .section, .card, .card-top, .rate-box, .grid-2,
+  .co-name, .badges, .desc, .consider-box, .consider-item, .mini-note{
+    min-width:0;
+  }
+
+  /* 긴 문구가 줄바꿈 없이 가로로 뻗는 것 방지 */
+  .hint, .desc, .consider-item, .mini-note{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+
   body{
     font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-    background:var(--bg); color:var(--text);
-    padding:20px; display:flex; justify-content:center; margin:0;
+    background:var(--bg);
+    color:var(--text);
+    padding:20px;
+    display:flex;
+    justify-content:center;
+    margin:0;
   }
+
   .container{
-    background:#fff; width:100%; max-width:760px;
-    padding:24px; border-radius:16px;
+    background:#fff;
+    width:100%;
+    max-width:760px;
+    padding:24px;
+    border-radius:16px;
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
   }
+
   h2{
-    text-align:center; color:var(--primary);
-    margin:0 0 18px 0; padding-bottom:14px;
+    text-align:center;
+    color:var(--primary);
+    margin:0 0 18px 0;
+    padding-bottom:14px;
     border-bottom:2px solid var(--line);
     font-size:1.55rem;
   }
 
   .section{
-    margin-bottom:16px; background:#f9fafb;
-    padding:14px; border-radius:12px; border:1px solid var(--line);
-  }
-  .label{
-    font-size:0.95rem; font-weight:900;
-    margin-bottom:10px; display:block; color:#374151;
-  }
-  .hint{
-    font-size:0.82rem; color:var(--muted);
-    margin-top:8px; line-height:1.45;
-  }
-  .sub-text{
-    font-size:0.8rem; color:#ef4444;
-    margin-top:6px; display:none;
+    margin-bottom:16px;
+    background:#f9fafb;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid var(--line);
   }
 
-  select,input{
-    width:100%; padding:12px;
-    border:1px solid #d1d5db; border-radius:10px;
-    font-size:1rem; box-sizing:border-box; background:#fff;
+  .label{
+    font-size:0.95rem;
+    font-weight:900;
+    margin-bottom:10px;
+    display:block;
+    color:#374151;
+  }
+
+  .hint{
+    font-size:0.82rem;
+    color:var(--muted);
+    margin-top:8px;
+    line-height:1.45;
+  }
+
+  .sub-text{
+    font-size:0.8rem;
+    color:#ef4444;
+    margin-top:6px;
+    display:none;
+  }
+
+  select, input{
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    font-size:1rem;
+    background:#fff;
   }
 
   .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
   button.primary{
-    width:100%; padding:16px; background:var(--primary); color:#fff;
-    border:none; border-radius:12px;
-    font-size:1.1rem; font-weight:900;
-    cursor:pointer; transition:0.2s; margin-top:6px;
+    width:100%;
+    padding:16px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    font-size:1.1rem;
+    font-weight:900;
+    cursor:pointer;
+    transition:0.2s;
+    margin-top:6px;
   }
   button.primary:hover{ background:#2563eb; transform:translateY(-1px); }
 
-  /* pills (toggle buttons) */
+  /* pills */
   .pill-row{ display:flex; flex-wrap:wrap; gap:8px; }
   .pill{
-    display:inline-flex; align-items:center; gap:8px;
-    border:1px solid #d1d5db; background:#fff; color:#111827;
-    padding:10px 12px; border-radius:999px;
-    cursor:pointer; user-select:none;
-    font-size:0.92rem; font-weight:800;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid #d1d5db;
+    background:#fff;
+    color:#111827;
+    padding:10px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    user-select:none;
+    font-size:0.92rem;
+    font-weight:800;
+    min-width:0;
   }
   .pill input{ display:none; }
   .pill.on{
@@ -86,12 +150,16 @@
     background:#eff6ff;
     color:#1d4ed8;
   }
-  .pill .small{
-    font-size:0.78rem; font-weight:800; color:var(--muted);
-  }
+  .pill .small{ font-size:0.78rem; font-weight:800; color:var(--muted); }
 
   /* results */
-  #result{ margin-top:18px; display:none; border-top:2px solid var(--line); padding-top:18px; }
+  #result{
+    margin-top:18px;
+    display:none;
+    border-top:2px solid var(--line);
+    padding-top:18px;
+  }
+
   .card{
     background:var(--card);
     border:1px solid var(--line);
@@ -104,12 +172,14 @@
     border:2px solid var(--primary);
     background:var(--best);
   }
+
   .card-top{
     display:flex;
     justify-content:space-between;
     gap:12px;
     align-items:flex-start;
   }
+
   .co-name{
     font-weight:950;
     font-size:1.08rem;
@@ -117,11 +187,17 @@
     align-items:center;
     gap:8px;
   }
+
   .badges{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
   .badge{
-    font-size:0.78rem; font-weight:950;
-    padding:4px 8px; border-radius:999px;
-    border:1px solid #d1d5db; background:#fff; color:#374151;
+    font-size:0.78rem;
+    font-weight:950;
+    padding:4px 8px;
+    border-radius:999px;
+    border:1px solid #d1d5db;
+    background:#fff;
+    color:#374151;
+    white-space:nowrap;
   }
   .badge.best{
     border-color:#93c5fd;
@@ -130,14 +206,23 @@
   }
 
   .rate-box{
-    display:flex; gap:10px; align-items:stretch;
+    display:flex;
+    gap:10px;
+    align-items:stretch;
+    min-width:0;
   }
+
   .rate{
     min-width:132px;
-    border:1px solid #d1d5db; background:#fff;
-    border-radius:12px; padding:10px 10px;
-    display:flex; flex-direction:column;
-    gap:4px; text-align:right;
+    border:1px solid #d1d5db;
+    background:#fff;
+    border-radius:12px;
+    padding:10px 10px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    text-align:right;
+    min-width:0; /* WebView flex 폭 계산 안정화 */
   }
   .rate .k{ font-size:0.78rem; color:var(--muted); font-weight:900; }
   .rate .v{ font-size:1.24rem; font-weight:950; color:#111827; }
@@ -163,14 +248,11 @@
     border-radius:12px;
   }
 
-  /* 고려 특약(미가입된) 강조 */
   .consider-box.warn{
     border:1px solid var(--warnBorder);
     background:var(--warnBg);
   }
-  .consider-box.warn .consider-title{
-    color:var(--warnTitle);
-  }
+  .consider-box.warn .consider-title{ color:var(--warnTitle); }
 
   .consider-title{
     font-weight:950;
@@ -193,25 +275,18 @@
     line-height:1.4;
   }
 
-  /* =========================
-     Mobile responsive fixes
-     결과 산출 후 카드 깨짐 방지
-  ========================= */
-  *{ box-sizing:border-box; }
-  html, body{ width:100%; max-width:100%; overflow-x:hidden; }
-
-  /* iOS에서 input 확대/레이아웃 튐 방지 */
+  /* ===== iOS에서 input 확대/레이아웃 튐 방지 ===== */
   select, input, button{ font-size:16px; }
 
+  /* ===== Mobile responsive fixes (핵심) ===== */
   @media (max-width: 520px){
     body{
       padding:12px;
-      display:block; /* 좁은 화면에서 flex 중앙정렬로 인한 계산 문제 방지 */
+      display:block; /* 카카오 인앱 포함 iOS WebView에서 flex 중앙정렬이 깨짐 유발 */
     }
 
     .container{
       width:100%;
-      max-width:760px;
       padding:16px;
       border-radius:14px;
     }
@@ -227,38 +302,32 @@
     }
 
     .pill-row{ gap:8px; }
-    .pill{
-      width:100%;
-      justify-content:space-between;
-    }
+    .pill{ width:100%; justify-content:space-between; }
 
-    /* 결과 카드 상단 레이아웃을 세로로 변경 */
     .card-top{
       flex-direction:column;
       align-items:stretch;
       gap:10px;
     }
 
-    /* 오른쪽 rate 영역이 가로로 터지지 않도록 */
     .rate-box{
       width:100%;
       display:grid;
-      grid-template-columns:1fr; /* 가장 안전 */
+      grid-template-columns:1fr;
       gap:10px;
     }
 
     .rate{
-      min-width:0;   /* 기존 132px 때문에 오버플로 발생 */
+      min-width:0; /* 기존 132px 강제폭 해제 */
       width:100%;
-      text-align:left; /* 모바일 가독성 */
+      text-align:left;
     }
-    .rate .v{
-      font-size:1.15rem;
-    }
+
+    .rate .v{ font-size:1.15rem; }
   }
 
-  /* 조금 더 넓은 폰에서는 2열로 */
   @media (min-width: 521px) and (max-width: 720px){
+    body{ display:block; } /* 인앱 안정화 */
     .card-top{
       flex-direction:column;
       align-items:stretch;
@@ -278,7 +347,6 @@
 <div class="container">
   <h2>🚗자동차보험 특약별 보험료 할인율 계산기</h2>
 
-  <!-- 1. 주행거리 -->
   <div class="section">
     <span class="label">1. 연간 주행거리 (마일리지: 후정산)</span>
     <select id="km">
@@ -305,7 +373,6 @@
     </div>
   </div>
 
-  <!-- 2. 차량/블랙박스 -->
   <div class="section">
     <span class="label">2. 차량 정보</span>
     <div class="grid-2">
@@ -323,7 +390,6 @@
     </div>
   </div>
 
-  <!-- 3. 자녀 할인 -->
   <div class="section">
     <span class="label">3. 자녀 정보 (만 나이)</span>
     <div class="grid-2">
@@ -363,7 +429,6 @@
     <div id="childMsg" class="sub-text">※ 자녀가 2명 이상이면 <b>막내 나이</b> 기준으로 입력하세요.</div>
   </div>
 
-  <!-- 4. 안전운전 -->
   <div class="section">
     <span class="label">4. 안전운전 점수 (UBI: 즉시할인)</span>
     <div class="grid-2">
@@ -377,7 +442,6 @@
     <div class="hint">UBI는 보험사와 상품에 따라 적용조건이 다를 수 있습니다.</div>
   </div>
 
-  <!-- 5. 선택형 즉시할인 특약 -->
   <div class="section">
     <span class="label">5. 즉시할인 특약 (선택형)</span>
 
@@ -415,9 +479,6 @@
 <script>
   const companies = ['현대','KB','삼성','DB','메리츠','한화'];
 
-  /* ======================
-     차령 드롭다운 (0년=2026년식)
-  ====================== */
   const BASE_NEW_YEAR = 2026;
   function buildCarAgeOptions(){
     const sel = document.getElementById('carAge');
@@ -439,9 +500,6 @@
     sel.value = '0';
   }
 
-  /* ======================
-     특약 조건/주의사항 문구 (보험사별)
-  ====================== */
   const RIDER_RULE_TEXT = {
     walk: {
       '현대': '세부 조건 명시 X',
@@ -474,11 +532,6 @@
     return (v && String(v).trim()) ? String(v) : '명시 X';
   }
 
-  /* ======================
-     데이터 (CSV 반영)
-  ====================== */
-
-  // 1) 마일리지(후정산)
   const KM_DATA = {
     '현대': {1000:45.00, 2000:36.00, 3000:36.00, 4000:29.00, 5000:29.00, 6000:22.00, 7000:22.00, 8000:22.00, 9000:18.00, 10000:18.00, 11000:8.00, 12000:8.00, 13000:5.00, 14000:5.00, 15000:5.00, 'over':2.00},
     'KB':   {1000:35.30, 2000:35.30, 3000:30.30, 4000:30.30, 5000:26.50, 6000:22.60, 7000:22.60, 8000:22.60, 9000:17.30, 10000:17.30, 11000:7.50, 12000:7.50, 13000:5.40, 14000:5.40, 15000:5.40, 'over':0.00},
@@ -488,7 +541,6 @@
     '한화': {1000:38.90, 2000:36.20, 3000:33.50, 4000:30.80, 5000:28.10, 6000:25.50, 7000:22.80, 8000:20.10, 9000:17.40, 10000:14.70, 11000:12.10, 12000:9.40, 13000:6.70, 14000:4.00, 15000:1.30, 'over':0.00}
   };
 
-  // 2) 블랙박스(일반형) 차령별 (index: 0=0년 ... 15=15년 이상)
   const BBOX_DATA = {
     '현대':  [2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,2.20,0.00,0.00,0.00],
     'KB':    [4.30,4.30,4.30,2.60,2.60,2.60,2.60,2.60,2.60,2.60,2.60,2.60,0.00,0.00,0.00,0.00],
@@ -503,7 +555,6 @@
     return (row[yIdx] !== undefined) ? Number(row[yIdx]) : 0.00;
   }
 
-  // 3) 자녀할인 (1자녀 / 2자녀 이상, 태아 + 0..18)
   const CHILD_1 = {
     '현대':  {'fetus':14.00, 0:14.00, 1:10.00,2:10.00,3:10.00,4:10.00,5:10.00,6:10.00,7:6.00,8:6.00,9:6.00,10:2.00,11:2.00,12:2.00,13:0.00,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
     'KB':    {'fetus':13.70, 0:13.70, 1:7.70,2:7.70,3:7.70,4:7.70,5:7.70,6:7.70,7:3.70,8:3.70,9:3.70,10:1.70,11:1.70,12:1.70,13:1.70,14:0.00,15:0.00,16:0.00,17:0.00,18:0.00},
@@ -529,7 +580,6 @@
     return Number(compRow[childAgeKey]);
   }
 
-  // 4) 안전운전(UBI) - used/new
   const UBI_USED = {
     '현대': { tmap:[{min:96,rate:11.00},{min:95,rate:11.00},{min:91,rate:11.00},{min:90,rate:11.00},{min:86,rate:8.00},{min:85,rate:8.00},{min:81,rate:8.00},{min:80,rate:8.00},{min:71,rate:4.30},{min:70,rate:4.30},{min:61,rate:0.00}],
               naver:[{min:96,rate:10.20},{min:95,rate:10.20},{min:91,rate:10.20},{min:90,rate:10.20},{min:86,rate:7.20},{min:85,rate:7.20},{min:81,rate:7.20},{min:80,rate:7.20},{min:71,rate:3.50},{min:70,rate:3.50},{min:61,rate:0.00}] },
@@ -580,14 +630,10 @@
     return candidates.length ? Math.max(...candidates) : 0.00;
   }
 
-  // 5) 걷기/대중교통/고령교육 (즉시할인, 선택형)
   const RIDER_WALK = { '현대':5.00, 'KB':10.00, '삼성':6.00, 'DB':8.80, '메리츠':0.00, '한화':0.00 };
   const RIDER_TRANSIT = { '현대':9.00, 'KB':10.00, '삼성':10.00, 'DB':10.00, '메리츠':0.00, '한화':0.00 };
   const RIDER_SENIOR_EDU = { '현대':5.00, 'KB':5.00, '삼성':5.00, 'DB':5.00, '메리츠':5.00, '한화':5.00 };
 
-  /* ======================
-     UI helpers
-  ====================== */
   function checkChildMsg(){
     const cnt = document.getElementById('childCount').value;
     document.getElementById('childMsg').style.display = (cnt === '2') ? 'block' : 'none';
@@ -638,11 +684,9 @@
       let logsInstant = [];
       let logMileage = '';
 
-      // 후정산: 마일리지
       mileage = (KM_DATA[comp] && KM_DATA[comp][km] !== undefined) ? Number(KM_DATA[comp][km]) : 0.00;
       logMileage = `마일리지(후정산) ${fmtRate(mileage)}`;
 
-      // 즉시: 블랙박스
       if (bbox === 'Y'){
         const bVal = getBBoxRate(comp, carAge);
         if (bVal > 0){
@@ -651,7 +695,6 @@
         }
       }
 
-      // 즉시: 자녀
       if (childCount !== '0' && childAgeVal !== 'none'){
         const key = (childAgeVal === 'fetus') ? 'fetus' : Number(childAgeVal);
         const cVal = getChildRate(comp, childCount, key);
@@ -661,7 +704,6 @@
         }
       }
 
-      // 즉시: UBI
       if (ubiApp !== 'none'){
         const uVal = getUbiRate(comp, ubiApp, ubiScore, isNew);
         if (uVal > 0){
@@ -670,7 +712,6 @@
         }
       }
 
-      // 즉시: 선택 특약
       if (optWalk){
         const v = Number(RIDER_WALK[comp] || 0);
         if (v > 0){
@@ -695,22 +736,18 @@
 
       const simpleSum = instant + mileage;
 
-      // 고려 특약
       let consider = [];
 
-      // 블랙박스
       if (bbox === 'N'){
         const add = getBBoxRate(comp, carAge);
         if (add > 0) consider.push({ name:'블랙박스 장착', rate:add, type:'simpleMax' });
       }
 
-      // UBI
       if (ubiApp === 'none' || !ubiScore){
         const maxUbi = getUbiMax(comp, isNew);
         if (maxUbi > 0) consider.push({ name:'안전운전(UBI)', rate:maxUbi, type:'simpleMax' });
       }
 
-      // 걷기/대중교통/고령교육
       if (!optWalk){
         const add = Number(RIDER_WALK[comp] || 0);
         if (add > 0) consider.push({ name:'걷기점수 할인특약', rate:add, type:'labeled', key:'walk', label:'기준 충족 여부:' });
@@ -737,7 +774,6 @@
       });
     }
 
-    // 정렬 규칙
     const allInstantZero = results.every(r => Number(r.instantRate) === 0);
     results.sort((a, b) => {
       if (allInstantZero) return Number(b.mileageRate) - Number(a.mileageRate);
@@ -770,7 +806,6 @@
               </div>`;
             return;
           }
-
           if (item.type === 'labeled'){
             const rule = item.key ? getRiderRuleText(r.name, item.key) : '명시 X';
             considerHtml += `
@@ -817,7 +852,6 @@
     });
   }
 
-  // init
   buildCarAgeOptions();
   checkChildMsg();
   bindPills();
