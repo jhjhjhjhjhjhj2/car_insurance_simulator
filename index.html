@@ -21,6 +21,11 @@
     --warnBg:#fff1f2;
     --warnBorder:#fecdd3;
     --warnTitle:#be123c;
+
+    /* 준법/저작권 강조 */
+    --noticeBg:#fff5f5;
+    --noticeBorder:#ef4444;
+    --noticeText:#b91c1c;
   }
 
   /* ===== WebView(iOS/Kakao) 안정화 기본값 ===== */
@@ -36,12 +41,13 @@
 
   /* flex/grid 자식이 내용 때문에 폭을 밀어내지 않게 */
   .container, .section, .card, .card-top, .rate-box, .grid-2,
-  .co-name, .badges, .desc, .consider-box, .consider-item, .mini-note{
+  .co-name, .badges, .desc, .consider-box, .consider-item, .mini-note,
+  .notice-box, .footer-notice{
     min-width:0;
   }
 
   /* 긴 문구가 줄바꿈 없이 가로로 뻗는 것 방지 */
-  .hint, .desc, .consider-item, .mini-note{
+  .hint, .desc, .consider-item, .mini-note, .notice-box, .footer-notice{
     overflow-wrap:anywhere;
     word-break:break-word;
   }
@@ -68,10 +74,23 @@
   h2{
     text-align:center;
     color:var(--primary);
-    margin:0 0 18px 0;
-    padding-bottom:14px;
+    margin:0 0 10px 0;
+    padding-bottom:12px;
     border-bottom:2px solid var(--line);
     font-size:1.55rem;
+  }
+
+  /* ===== 제목 하단 준법/저작권 공지(강조) ===== */
+  .notice-box{
+    margin:12px 0 18px 0;
+    padding:12px 14px;
+    border:2px solid var(--noticeBorder);
+    background:var(--noticeBg);
+    color:var(--noticeText);
+    border-radius:12px;
+    font-weight:900;
+    line-height:1.5;
+    text-align:left;
   }
 
   .section{
@@ -305,6 +324,30 @@
     line-height:1.4;
   }
 
+  /* ===== 하단 준법/저작권 공지(강조) ===== */
+  .footer-notice{
+    margin-top:18px;
+    padding:14px 14px;
+    border:2px solid var(--noticeBorder);
+    background:var(--noticeBg);
+    color:var(--noticeText);
+    border-radius:12px;
+    line-height:1.55;
+    font-weight:900;
+  }
+  .footer-notice .title{
+    font-size:0.95rem;
+    margin-bottom:8px;
+  }
+  .footer-notice ul{
+    margin:0;
+    padding-left:18px;
+  }
+  .footer-notice li{
+    margin:6px 0;
+    font-weight:800;
+  }
+
   /* ===== iOS에서 input 확대/레이아웃 튐 방지 ===== */
   select, input, button{ font-size:16px; }
 
@@ -371,6 +414,11 @@
 
 <div class="container">
   <h2>🚗자동차보험 특약별 보험료 할인율 계산기</h2>
+
+  <!-- 제목 하단 준법감시/저작권 문구 -->
+  <div class="notice-box">
+    본 자동차보험 특약별 보험료 할인율 계산기(이하 계산기)는 (주)에이플러스에셋어드바이저의 설계사(TFA) 교육용으로 제작된 자료로, 당사 설계사의 업무 지원을 목적으로만 제공됩니다.
+  </div>
 
   <div class="section">
     <span class="label">1. 연간 주행거리 (마일리지: 후정산)</span>
@@ -500,6 +548,17 @@
   <button class="primary" onclick="calculate()">할인율 계산하기</button>
 
   <div id="result"></div>
+
+  <!-- 하단 준법감시/저작권 문구 -->
+  <div class="footer-notice">
+    <div class="title">Copyright / 준법감시 안내</div>
+    <ul>
+      <li>본 계산기는 (주)에이플러스에셋어드바이저의 소중한 지적 재산으로, 당사 설계사의 업무 지원을 목적으로만 제공됩니다.</li>
+      <li>본 계산기를 회사 외부인(타 법인, 타 설계사 조직, 일반 고객 등)에게 제공하거나, 온라인 커뮤니티, SNS, 메신저, 클라우드 저장소 등에 게시, 업로드하는 행위는 엄격히 금지됩니다.</li>
+      <li>본 계산기의 전부 또는 일부를 무단으로 외부에 유출하거나, 변경, 편집, 2차 가공하여 사용할 경우, 관련 법령 및 지식재산권에 따른 민형사상 책임이 발생할 수 있으며, 회사 내부 규정에 따른 제재가 병행될 수 있습니다.</li>
+      <li>본 계산기는 법적 효력이 없으며, 보험료의 산정 근거가 될 수 없습니다. 보험료 산정에 대한 세부 기준은 회사별, 차종별, 연식별, 특약별 상이할 수 있습니다.</li>
+    </ul>
+  </div>
 </div>
 
 <script>
@@ -683,7 +742,6 @@
   function fmtRate(x){
     return `${Number(x).toFixed(2)}%`;
   }
-
 
   function calculate(){
     const km = document.getElementById('km').value;
@@ -895,4 +953,3 @@
 
 </body>
 </html>
-
